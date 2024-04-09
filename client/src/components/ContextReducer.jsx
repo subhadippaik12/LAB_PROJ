@@ -14,6 +14,7 @@ const reducer = (state, action) => {
           qty: action.qty,
           price: action.price,
           img: action.img,
+          type: action.unit,
         },
       ];
 
@@ -23,14 +24,13 @@ const reducer = (state, action) => {
       return newArr;
 
     case 'UPDATE':
-      //console.log(action);
       const arr = [...state];
       arr.find((food, index) => {
         if (food.id === action.id) {
           arr[index] = {
             ...food,
-            qty: parseInt(action.qty) + food.qty,
-            price: action.price + food.price,
+            qty: action.qty,
+            price: action.price,
           };
         }
       });

@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const jwtSecret = 'MynameisEndtoEndYoutubeChannel1$#';
 const manMail = process.env.MAN_MAIL;
+const empMail = process.env.EMP_MAIL;
+
 // router.post(
 //   '/createuser',
 //   [
@@ -90,7 +92,12 @@ router.post(
       return res.json({
         success: true,
         authToken,
-        role: email === manMail ? 'Manager' : 'Sales',
+        role:
+          email === manMail
+            ? 'Manager'
+            : email === empMail
+            ? 'Employee'
+            : 'Sales',
       });
     } catch (err) {
       console.log(err);

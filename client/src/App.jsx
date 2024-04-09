@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './screens/Login.jsx';
 //import Signup from './screens/Signup.jsx';
 import MyOrder from './screens/MyOrder.jsx';
+import MySupply from './screens/MySupply.jsx';
 import OrderReport from './screens/OrderReport.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap-dark-5/dist/css/bootstrap-dark.min.css';
@@ -22,6 +23,7 @@ function App() {
             {/* <Route exact path="/createuser" element={<Signup />} /> */}
             <Route exact path="/myOrder" element={<MyOrder />} />
             <Route exact path="/OrderReport" element={<OrderReport />} />
+            <Route exact path="/mySupplies" element={<MySupply />} />
           </Routes>
         </div>
       </Router>

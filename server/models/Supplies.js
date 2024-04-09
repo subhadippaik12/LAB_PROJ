@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const OrderSchema = new Schema({
+const SupplySchema = new Schema({
   name: String,
   mobileno: String,
   totprice: String,
@@ -10,5 +10,5 @@ const OrderSchema = new Schema({
   items: Array,
 });
 
-const OrderModel = mongoose.model('ordersss', OrderSchema);
-module.exports = OrderModel;
+const SupplyModel = mongoose.model('supplies', SupplySchema);
+module.exports = SupplyModel;

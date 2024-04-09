@@ -2,14 +2,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatchCart, useCart } from './ContextReducer';
 
 export default function Card(props) {
+  const role = localStorage.getItem('role');
   const priceRef = useRef();
   const dispatch = useDispatchCart();
   const data = useCart();
   const [qty, setQty] = useState(1);
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState(0);
+  const [supp, setSupp] = useState(parseInt(props.foodItem.suprice));
   const [currPrice, setCurrPrice] = useState(parseInt(props.foodItem.price));
   const [available, setAvailable] = useState(parseInt(props.foodItem.qty));
-  const [quantityToAdd, setQuantityToAdd] = useState('0');
+  const [quantityToAdd, setQuantityToAdd] = useState(0);
 
   const handleAddToCart = async () => {
     let food = {};
@@ -19,39 +21,29 @@ export default function Card(props) {
         break;
       }
     }
-    //console.log(food);
-    if (food.size) {
-      if (food.size === size) {
-        await dispatch({
-          type: 'UPDATE',
-          id: props.foodItem._id,
-          price: qty * currPrice,
-          qty: qty,
-        });
-        return;
-      } else if (food.size !== size) {
-        await dispatch({
-          type: 'ADD',
-          id: props.foodItem._id,
-          name: props.foodItem.name,
-          price: qty * currPrice,
-          qty: qty,
-        });
-        return;
-      }
+    if (food.id) {
+      await dispatch({
+        type: 'UPDATE',
+        id: props.foodItem._id,
+        price: (qty * currPrice).toString(),
+        qty: qty.toString(),
+        unit: props.foodItem.type,
+      });
+      return;
     }
+
     await dispatch({
       type: 'ADD',
       id: props.foodItem._id,
       name: props.foodItem.name,
-      price: qty * currPrice,
-      qty: qty,
+      price: (qty * currPrice).toString(),
+      qty: qty.toString(),
+      unit: props.foodItem.type,
     });
   };
-
   const increaseQuantity = async (e) => {
     e.preventDefault();
-    const currQuantity = parseInt(quantityToAdd) + available;
+    const currQuantity = quantityToAdd + available;
     const data = {
       item: props.foodItem.name,
       quantity: currQuantity.toString(),
@@ -70,14 +62,18 @@ export default function Card(props) {
     }
     if (json.success) {
       alert('Quantity Changed');
-      setQuantityToAdd('0');
+      setQuantityToAdd(0);
       setAvailable(currQuantity);
     }
   };
 
   const setNewPrice = async (e) => {
     e.preventDefault();
-    const data = { item: props.foodItem.name, newprice: price };
+    const data = {
+      role,
+      item: props.foodItem.name,
+      newprice: price.toString(),
+    };
     const response = await fetch('http://localhost:5000/price/change', {
       method: 'PUT',
       headers: {
@@ -92,7 +88,12 @@ export default function Card(props) {
     }
     if (json.success) {
       alert('Price Changed');
-      setCurrPrice(parseInt(price));
+      if (role === 'Manager') {
+        setCurrPrice(price);
+      } else {
+        setSupp(price);
+      }
+      setPrice(0);
     }
   };
   return (
@@ -107,72 +108,99 @@ export default function Card(props) {
         style={{ maxHeight: '200px', width: '100%', objectFit: 'cover' }}
       />
       <div className="card-body">
-        <h5 className="card-title">{props.foodItem.name}</h5>
+        <h5 className="text-center card-title fw-bold">
+          {props.foodItem.name}
+        </h5>
         <div className="container w-100">
-          {localStorage.getItem('role') === 'Sales' && (
-            <select
-              className="m-2 h-100 bg-success rounded"
-              onChange={(e) => setQty(e.target.value)}
-            >
-              {Array.from({ length: available }, (e, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </option>
-              ))}
-            </select>
+          <div className="h-100 fs-5">Unit: {props.foodItem.type}</div>
+          {role === 'Sales' && (
+            <div>
+              <label htmlFor="amt">Qty Req :</label>
+              <input
+                defaultValue="1"
+                id="amt"
+                min="0"
+                max={available}
+                type="number"
+                onChange={(e) => setQty(e.target.value)}
+              ></input>
+            </div>
           )}
-          <div>{props.foodItem.type}</div>
-          <div>Available: {available}</div>
-          <div className="d-inline h-100 fs-5">Rs {qty * currPrice}</div>
-          {localStorage.getItem('role') === 'Manager' && (
-            <form className="mt-2">
+          {role === 'Employee' && (
+            <div>
+              <label htmlFor="amt">Qty Req :</label>
+              <input
+                defaultValue="1"
+                id="amt"
+                min="0"
+                type="number"
+                onChange={(e) => setQty(e.target.value)}
+              ></input>
+            </div>
+          )}
+          <div className="h-100 fs-5">Available: {available}</div>
+          {role !== 'Employee' && (
+            <div className="h-100 fs-5">Sales price: Rs {qty * currPrice}</div>
+          )}
+          {role !== 'Sales' && (
+            <div className="h-100 fs-5">Supplier Price: Rs {qty * supp}</div>
+          )}
+          {role !== 'Sales' && (
+            <div className="input-group">
+              <div className="w-5">
+                <input
+                  id="newprice"
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="form-control"
+                  placeholder="Price"
+                />
+              </div>
+              <button
+                className="btn btn-outline-success"
+                type="button"
+                onClick={setNewPrice}
+              >
+                {role === 'Manager'
+                  ? 'Change Per Unit Sales Price'
+                  : 'Change Per Unit Supplier Price'}
+              </button>
+            </div>
+          )}
+          {role !== 'Manager' && (
+            <div>
+              <button
+                className="btn btn-success justify-center mt-2"
+                onClick={handleAddToCart}
+              >
+                Add to Cart
+              </button>
+            </div>
+          )}
+          {/* {role === 'Employee' && (
+            <div className="mt-2">
               <div className="input-group">
                 <div className="w-5">
                   <input
-                    id="newprice"
+                    id="newqty"
                     type="number"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
+                    value={quantityToAdd}
+                    onChange={(e) => setQuantityToAdd(e.target.value)}
                     className="form-control"
-                    placeholder="Price"
+                    placeholder="Qty"
                   />
                 </div>
                 <button
                   className="btn btn-outline-success"
                   type="button"
-                  onClick={setNewPrice}
+                  onClick={increaseQuantity}
                 >
-                  Change Price
+                  Increase Quantity
                 </button>
               </div>
-            </form>
-          )}
-          {localStorage.getItem('role') === 'Sales' && (
-            <button
-              className="btn btn-success justify-center mt-2"
-              onClick={handleAddToCart}
-            >
-              Add to Cart
-            </button>
-          )}
-          {localStorage.getItem('role') === 'Manager' && (
-            <div className="mt-2">
-              <form onSubmit={increaseQuantity}>
-                <div className="input-group">
-                  <input
-                    type="number"
-                    value={quantityToAdd}
-                    onChange={(e) => setQuantityToAdd(e.target.value)}
-                    className="form-control"
-                    placeholder="No"
-                  />
-                  <button className="btn btn-outline-primary" type="submit">
-                    Increase Quantity
-                  </button>
-                </div>
-              </form>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

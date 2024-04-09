@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-export default function MyOrder() {
+export default function MySupply() {
   const [orderData, setOrderData] = useState([]);
   const fetchMyOrder = async () => {
     //console.log(userEmail);
-    const response = await fetch('http://localhost:5000/order/myOrderData', {
+    const response = await fetch('http://localhost:5000/supply/myOrderData', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -23,15 +23,13 @@ export default function MyOrder() {
       <div>
         <Navbar />
       </div>
-      <div className="display-6 ms-3 mb-3">Orders Received: </div>
+      <div className="display-6 ms-3 mb-3">Supplies ordered: </div>
       <div className="container">
         <div className="row">
           {orderData.orderData
             ? orderData.orderData.reverse().map((data, k) => {
                 return (
                   <div key={k} className="my-2 bg-light text-dark">
-                    <div>Name: {data.name}</div>
-                    <div>Mobile no: {data.mobileno}</div>
                     <div>Date: {data.date}</div>
                     <div>Total Price: {data.totprice}</div>
                     <div>

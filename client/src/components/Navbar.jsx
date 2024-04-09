@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Badge from 'react-bootstrap/Badge';
 import Modal from '../Modal';
 import Cart from '../screens/Cart';
-import { useCart } from './ContextReducer';
+import { useCart, useDispatchCart } from './ContextReducer';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -12,8 +12,10 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 export default function BasicNavbar() {
   const [cartView, setCartView] = useState(false);
   const navigate = useNavigate();
+  let dispatch = useDispatchCart();
   const data = useCart();
   const handleLogout = (e) => {
+    dispatch({ type: 'DROP' });
     localStorage.removeItem('authToken');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('role');
@@ -53,6 +55,16 @@ export default function BasicNavbar() {
             ) : (
               ''
             )}
+            {localStorage.getItem('authToken') &&
+            localStorage.getItem('role') === 'Employee' ? (
+              <li className="nav-item active">
+                <Link className="nav-link active fs-5" to="/mySupplies">
+                  My Supplies
+                </Link>
+              </li>
+            ) : (
+              ''
+            )}
           </ul>
           <div className="d-flex">
             {!localStorage.getItem('authToken') ? (
@@ -63,7 +75,7 @@ export default function BasicNavbar() {
               </div>
             ) : (
               <div>
-                {localStorage.getItem('role') === 'Sales' ? (
+                {localStorage.getItem('role') !== 'Manager' ? (
                   <div
                     className="btn bg-white text-success mx-2"
                     onClick={() => {
