@@ -17,7 +17,7 @@ export default function Home() {
     });
 
     const data = await response.json();
-    //console.log(data[0], data[1]);
+    data[1].reverse();
     setFoodItem(data[0]);
     setFoodCat(data[1]);
   };
@@ -25,6 +25,7 @@ export default function Home() {
   useEffect(() => {
     loadData();
   }, []);
+
   return (
     <>
       <div>
@@ -118,9 +119,9 @@ export default function Home() {
       {
         <div className="container">
           {foodCat.length != 0
-            ? foodCat.map((cat) => {
+            ? foodCat.map((cat, k) => {
                 return (
-                  <div className="row mb-3">
+                  <div className="row mb-3" key={k}>
                     <div key={cat._id} className="fs-3 m-3">
                       {cat.CategoryName}
                     </div>
@@ -134,16 +135,10 @@ export default function Home() {
                               .toLowerCase()
                               .includes(search.toLowerCase())
                         )
-                        .map((filterItems) => {
+                        .map((filterItems, k) => {
                           return (
-                            <div
-                              key={filterItems._id}
-                              className="col-12 col-md-6 col-lg-3"
-                            >
-                              <Card
-                                foodItem={filterItems}
-                                options={filterItems.options[0]}
-                              ></Card>
+                            <div key={k} className="col-12 col-md-6 col-lg-3">
+                              <Card key={k} foodItem={filterItems}></Card>
                             </div>
                           );
                         })

@@ -5,12 +5,10 @@ export default function Card(props) {
   const priceRef = useRef();
   const dispatch = useDispatchCart();
   const data = useCart();
-  const options = props.options;
-  const priceOptions = Object.keys(options);
   const [qty, setQty] = useState(1);
-  const [size, setSize] = useState('');
-  const [price, setPrice] = useState(options[size] ? options[size][0] : '0');
-  const [available, setAvailable] = useState(options[size] ? parseInt(options[size][1]) : 0);
+  const [price, setPrice] = useState('');
+  const [currPrice, setCurrPrice] = useState(parseInt(props.foodItem.price));
+  const [available, setAvailable] = useState(parseInt(props.foodItem.qty));
   const [quantityToAdd, setQuantityToAdd] = useState('0');
 
   const handleAddToCart = async () => {
@@ -21,12 +19,13 @@ export default function Card(props) {
         break;
       }
     }
+    //console.log(food);
     if (food.size) {
       if (food.size === size) {
         await dispatch({
           type: 'UPDATE',
           id: props.foodItem._id,
-          price: finalPrice,
+          price: qty * currPrice,
           qty: qty,
         });
         return;
@@ -35,9 +34,8 @@ export default function Card(props) {
           type: 'ADD',
           id: props.foodItem._id,
           name: props.foodItem.name,
-          price: finalPrice,
+          price: qty * currPrice,
           qty: qty,
-          size: size,
         });
         return;
       }
@@ -46,17 +44,18 @@ export default function Card(props) {
       type: 'ADD',
       id: props.foodItem._id,
       name: props.foodItem.name,
-      price: finalPrice,
+      price: qty * currPrice,
       qty: qty,
-      size: size,
     });
-    // Increase the available quantity
-    setAvailable(prevAvailable => prevAvailable + parseInt(qty));
   };
 
   const increaseQuantity = async (e) => {
     e.preventDefault();
-    const data = { item: props.foodItem.name, opt: size, quantity: parseInt(quantityToAdd) };
+    const currQuantity = parseInt(quantityToAdd) + available;
+    const data = {
+      item: props.foodItem.name,
+      quantity: currQuantity.toString(),
+    };
     const response = await fetch('http://localhost:5000/quantity/update', {
       method: 'PUT',
       headers: {
@@ -71,23 +70,14 @@ export default function Card(props) {
     }
     if (json.success) {
       alert('Quantity Changed');
-      options[size][1] += parseInt(quantityToAdd);
       setQuantityToAdd('0');
-      setAvailable(prevAvailable => prevAvailable + parseInt(quantityToAdd));
+      setAvailable(currQuantity);
     }
   };
 
-  const finalPrice = qty * parseInt(options[size] ? options[size][0] : '0');
-
-  useEffect(() => {
-    setSize(priceRef.current.value);
-    setAvailable(options[size] ? parseInt(options[size][1]) : 0);
-    setPrice(options[size] ? options[size][0] : '0');
-  }, [size, options]);
-
   const setNewPrice = async (e) => {
     e.preventDefault();
-    const data = { item: props.foodItem.name, opt: size, newprice: price };
+    const data = { item: props.foodItem.name, newprice: price };
     const response = await fetch('http://localhost:5000/price/change', {
       method: 'PUT',
       headers: {
@@ -102,12 +92,14 @@ export default function Card(props) {
     }
     if (json.success) {
       alert('Price Changed');
-      options[size][0] = price;
+      setCurrPrice(parseInt(price));
     }
   };
-
   return (
-    <div className="card mt-3 bg-dark text-white" style={{ width: '100%', maxHeight: '500px' }}>
+    <div
+      className="card mt-3 bg-dark text-white"
+      style={{ width: '100%', maxHeight: '700px' }}
+    >
       <img
         className="card-img-top"
         src={props.foodItem.img}
@@ -118,7 +110,10 @@ export default function Card(props) {
         <h5 className="card-title">{props.foodItem.name}</h5>
         <div className="container w-100">
           {localStorage.getItem('role') === 'Sales' && (
-            <select className="m-2 h-100 bg-success rounded" onChange={(e) => setQty(e.target.value)}>
+            <select
+              className="m-2 h-100 bg-success rounded"
+              onChange={(e) => setQty(e.target.value)}
+            >
               {Array.from({ length: available }, (e, i) => (
                 <option key={i + 1} value={i + 1}>
                   {i + 1}
@@ -126,34 +121,37 @@ export default function Card(props) {
               ))}
             </select>
           )}
-          <select className="m-2 h-100 bg-success rounded" ref={priceRef} onChange={(e) => setSize(e.target.value)}>
-            {priceOptions.map((data) => (
-              <option key={data} value={data}>
-                {data}
-              </option>
-            ))}
-          </select>
+          <div>{props.foodItem.type}</div>
           <div>Available: {available}</div>
-          <div className="d-inline h-100 fs-5">Rs {finalPrice}</div>
+          <div className="d-inline h-100 fs-5">Rs {qty * currPrice}</div>
           {localStorage.getItem('role') === 'Manager' && (
             <form className="mt-2">
               <div className="input-group">
-                <input
-                  id="newprice"
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="form-control"
-                  placeholder="Price"
-                />
-                <button className="btn btn-outline-success" type="button" onClick={setNewPrice}>
+                <div className="w-5">
+                  <input
+                    id="newprice"
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="form-control"
+                    placeholder="Price"
+                  />
+                </div>
+                <button
+                  className="btn btn-outline-success"
+                  type="button"
+                  onClick={setNewPrice}
+                >
                   Change Price
                 </button>
               </div>
             </form>
           )}
           {localStorage.getItem('role') === 'Sales' && (
-            <button className="btn btn-success justify-center mt-2" onClick={handleAddToCart}>
+            <button
+              className="btn btn-success justify-center mt-2"
+              onClick={handleAddToCart}
+            >
               Add to Cart
             </button>
           )}

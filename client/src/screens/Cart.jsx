@@ -41,20 +41,18 @@ export default function Cart() {
               </th>
               <th scope="col">Name</th>
               <th scope="col">Quantity</th>
-              <th scope="col">Option</th>
               <th scope="col">Amount</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             {data.map((food, index) => (
-              <tr className="text-white">
+              <tr key={index} className="text-white">
                 <th scope="row" className="text-white">
                   {index + 1}
                 </th>
                 <td>{food.name}</td>
                 <td>{food.qty}</td>
-                <td>{food.size}</td>
                 <td>{food.price}</td>
                 <td>
                   <button type="button" className="btn p-0">
