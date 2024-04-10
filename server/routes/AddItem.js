@@ -12,7 +12,6 @@ router.post('/addi', async (req, res) => {
       itemDescription,
       category_Name,
     } = req.body;
-    console.log(req.body);
     // Check if all required fields are provided
     if (
       !itemName ||
