@@ -12,7 +12,7 @@ function OrderReport() {
   const [item, setItem] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [type, setType] = useState('orders');
+  const [type, setType] = useState('total');
 
   const fetchMyOrder = async () => {
     const response = await fetch('http://localhost:5000/order/myOrderData', {
@@ -143,73 +143,86 @@ function OrderReport() {
 
     // Define headers and filters
     const headers = [];
-    if (type === 'orders') {
+    if(type==='total'){
+      headers.push('Total Report');
+    }
+    if (type !== 'supplies') {
       headers.push(
         'Order Report',
         `Total Income: ${orderCost}`,
         `Total Quantities Sold: ${orderqty}`,
-        'Filters: '
       );
-    } else {
+    } 
+    if(type!='orders'){
       headers.push(
         'Supplies Report',
         `Total Expenditure: ${supplyCost}`,
         `Total Quantity Bought: ${supplyqty}`,
-        'Filters: '
       );
     }
+    if(type==='total'){
+      headers.push(orderCost-supplyCost>=0 ? `Profit: ${orderCost-supplyCost}`: `Loss: ${supplyCost-orderCost}`);
+    }
+
     const filters = [
-      `Start Date: ${startDate || 'N/A'}`,
-      `End Date: ${endDate || 'N/A'}`,
+      `Start Date: ${(startDate.length>0 && startDate[0]!=='u')?startDate:'N/A'}`,
+      `End Date: ${(endDate.length>0 && endDate[0]!=='u')?endDate:'N/A'}`,
       `Item: ${item || 'N/A'}`,
       `Type: ${type}`,
     ];
 
     // Add headers
     doc.setFontSize(20);
-    doc.text(headers[0], 10, 20); // Order Report
-    doc.setFontSize(15);
-    doc.text(headers[1], 10, 30); // Total Expenditure
-    doc.text(headers[2], 10, 40); // Total Quantity
+    let i=20;
+    headers.forEach((item, ind)=>{
+      doc.text(item, 10, i); 
+      i= i+10;
+      if(ind==0){
+        doc.setFontSize(15);
+      }
+    })
 
-    // Add filters
-    doc.text(headers[3], 10, 60); // Total Quantity
     doc.setFontSize(12);
-    doc.text(filters.join(', '), 10, 65); // Filters
+    doc.text('Filters', 10, i+10);
+    doc.text(filters.join(', '), 10, i+15); // Filters
 
     // Define columns for the table
-    const columns = ['#', 'Date', 'Name', 'Quantity', 'Unit', 'Amount'];
-
+    const columns = ['#', 'Date', 'Name', 'Quantity', 'Unit', 'Amount', 'Type'];
+    const rows=[];
     // Define rows data
-    if (type === 'orders') {
-      const rows = currOrders.map((order, index) => [
+    if (type !== 'supplies') {
+      currOrders.forEach((order, index) => rows.push([
         index + 1,
         order.date,
         order.name,
         order.qty,
         order.item_unit,
         order.tot_item_cost,
-      ]);
+        'Ordered',
+      ]));
 
       // Add the table to the PDF
       doc.autoTable({
-        startY: 80, // Start table from Y position 140 (below the headers and filters)
+        startY: i+30, // Start table from Y position 140 (below the headers and filters)
         head: [columns],
         body: rows,
       });
-    } else {
-      const rows = currSupplies.map((order, index) => [
+    } 
+    
+    if(type!=='orders'){
+      currSupplies.forEach((order, index) => rows.push([
         index + 1,
         order.date,
         order.name,
         order.qty,
         order.item_unit,
         order.tot_item_cost,
-      ]);
+        'Supplied',
+      ]));
 
       // Add the table to the PDF
       doc.autoTable({
-        startY: 80, // Start table from Y position 140 (below the headers and filters)
+        startY: i+30, // Start table from Y position 140 (below the headers and filters)
         head: [columns],
         body: rows,
       });
@@ -218,24 +231,32 @@ function OrderReport() {
     // Save the PDF
     doc.save('order_report.pdf');
   };
-
+  //console.log(currOrders);
   return (
     <div>
       <div>
         <Navbar></Navbar>
       </div>
-      {type === 'orders' && (
+      {type==='total' && (
+        <div className="text-center display-6 my-3">Total Report</div>
+      )}
+      {type !== 'supplies' && (
         <div className="text-center display-6">
-          <div className="text-center mb-3">Order Reports</div>
+          <div className="text-center my-3">Order Reports</div>
           <div>Total Income: {orderCost}</div>
           <div>Total quantities sold: {orderqty}</div>
         </div>
       )}
-      {type === 'supplies' && (
+      {type !== 'orders' && (
         <div className="text-center display-6">
-          <div className="text-center mb-3">Supplies Reports</div>
+          <div className="text-center my-3">Supplies Reports</div>
           <div>Total Expenditure: {supplyCost}</div>
           <div>Total quantities bought: {supplyqty}</div>
+        </div>
+      )}
+      {type === 'total' && (
+        <div className="text-center display-6">
+          {orderCost-supplyCost>=0 ? `Profit: ${orderCost-supplyCost}`: `Loss: ${supplyCost-orderCost}`}
         </div>
       )}
       <button className="" onClick={handleDownload}>
@@ -272,12 +293,13 @@ function OrderReport() {
           className="w-25"
           onChange={(e) => setType(e.target.value)}
         >
+          <option value="total">total</option>
           <option value="orders">orders</option>
           <option value="supplies">supplies</option>
         </select>
       </div>
 
-      {type === 'orders' && (
+      {type !== 'supplies' && (
         <div className="my-2 bg-light text-dark">
           <table className="table table-hover ">
             <thead className=" fs-4">
@@ -288,7 +310,7 @@ function OrderReport() {
                 <th scope="col">Quantity</th>
                 <th scope="col">Unit</th>
                 <th scope="col">Amount</th>
-                <th scope="col"></th>
+                <th scope="col">Type</th>
               </tr>
             </thead>
             <tbody>
@@ -300,6 +322,7 @@ function OrderReport() {
                   <td>{el.qty}</td>
                   <td>{el.item_unit}</td>
                   <td>{el.tot_item_cost}</td>
+                  <td>Ordered</td>
                 </tr>
               ))}
             </tbody>
@@ -307,7 +330,7 @@ function OrderReport() {
         </div>
       )}
 
-      {type === 'supplies' && (
+      {type !== 'orders' && (
         <div className="my-2 bg-light text-dark">
           <table className="table table-hover ">
             <thead className=" fs-4">
@@ -318,7 +341,7 @@ function OrderReport() {
                 <th scope="col">Quantity</th>
                 <th scope="col">Unit</th>
                 <th scope="col">Amount</th>
-                <th scope="col"></th>
+                <th scope="col">Type</th>
               </tr>
             </thead>
             <tbody>
@@ -330,6 +353,7 @@ function OrderReport() {
                   <td>{el.qty}</td>
                   <td>{el.item_unit}</td>
                   <td>{el.tot_item_cost}</td>
+                  <td>Supplied</td>
                 </tr>
               ))}
             </tbody>

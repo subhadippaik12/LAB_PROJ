@@ -41,6 +41,7 @@ export default function Card(props) {
       unit: props.foodItem.type,
     });
   };
+
   const increaseQuantity = async (e) => {
     e.preventDefault();
     const currQuantity = quantityToAdd + available;
@@ -96,11 +97,29 @@ export default function Card(props) {
       setPrice(0);
     }
   };
+
+  const deleteItem = async () => {
+    // Implement delete item logic here
+    try {
+      const response = await fetch(`http://localhost:5000/deleteItem/${props.foodItem._id}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        // Remove the item from UI or refetch data
+        alert('Item deleted');
+        props.onDelete(props.foodItem._id);
+        
+      } else {
+        console.error('Failed to delete item');
+        alert('Item is not deleted');
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+
   return (
-    <div
-      className="card mt-3 bg-dark text-white"
-      style={{ width: '100%', maxHeight: '700px' }}
-    >
+    <div className="card mt-3 bg-dark text-white" style={{ width: '100%' }}>
       <img
         className="card-img-top"
         src={props.foodItem.img}
@@ -146,17 +165,15 @@ export default function Card(props) {
             <div className="h-100 fs-5">Supplier Price: Rs {qty * supp}</div>
           )}
           {role !== 'Sales' && (
-            <div className="input-group">
-              <div className="w-5">
-                <input
-                  id="newprice"
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="form-control"
-                  placeholder="Price"
-                />
-              </div>
+            <div className="input-group mt-3">
+              <input
+                id="newprice"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="form-control"
+                placeholder="Price"
+              />
               <button
                 className="btn btn-outline-success"
                 type="button"
@@ -169,38 +186,25 @@ export default function Card(props) {
             </div>
           )}
           {role !== 'Manager' && (
-            <div>
+            <div className="mt-3">
               <button
-                className="btn btn-success justify-center mt-2"
+                className="btn btn-success"
                 onClick={handleAddToCart}
               >
                 Add to Cart
               </button>
             </div>
           )}
-          {/* {role === 'Employee' && (
-            <div className="mt-2">
-              <div className="input-group">
-                <div className="w-5">
-                  <input
-                    id="newqty"
-                    type="number"
-                    value={quantityToAdd}
-                    onChange={(e) => setQuantityToAdd(e.target.value)}
-                    className="form-control"
-                    placeholder="Qty"
-                  />
-                </div>
-                <button
-                  className="btn btn-outline-success"
-                  type="button"
-                  onClick={increaseQuantity}
-                >
-                  Increase Quantity
-                </button>
-              </div>
-            </div>
-          )} */}
+          {role === 'Manager'&&
+          <div className="mt-3">
+            <button
+              className="btn btn-danger"
+              onClick={deleteItem}
+            >
+              Delete
+            </button>
+          </div>
+          }
         </div>
       </div>
     </div>
