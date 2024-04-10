@@ -56,13 +56,11 @@ export default function Cart() {
   };
   return (
     <div>
-      <div className="container m-auto mt-5 table-responsive  table-responsive-sm table-responsive-md">
+      <div className="container bg-secondary m-auto mt-5 table-responsive table-responsive-sm table-responsive-md">
         <table className="table table-hover ">
           <thead className=" fs-4">
             <tr>
-              <th scope="col" className="text-white">
-                #
-              </th>
+              <th scope="col">#</th>
               <th scope="col">Name</th>
               <th scope="col">Quantity</th>
               <th scope="col">Unit</th>

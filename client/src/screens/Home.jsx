@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import Card from '../components/Card';
+import Categories from '../components/Categories';
 
 export default function Home() {
   const role = localStorage.getItem('role');
+  const [newCategory, setNewCategory] = useState('');
   const [search, setSearch] = useState('');
   const [foodCat, setFoodCat] = useState([]);
   const [foodItem, setFoodItem] = useState([]);
-  const [newCategory, setNewCategory] = useState('');
-  const [newItemName, setNewItemName] = useState('');
-  const [newItemImage, setNewItemImage] = useState('');
-  const [newItemPrice, setNewItemPrice] = useState('');
-  const [newItemType, setNewItemType] = useState('');
-  const [newItemDescription, setNewItemDescription] = useState('');
-
 
   const loadData = async () => {
     try {
@@ -56,69 +50,21 @@ export default function Home() {
     }
   };
 
-  const deleteCategory = async (categoryId) => {
+  const delete_Category = async (categoryId, catName) => {
     try {
-      const response = await fetch(`http://localhost:5000/deleteCategory/${categoryId}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        // Remove the deleted category from the state
-        setFoodCat(foodCat.filter(cat => cat._id !== categoryId));
-      } else {
-        console.error('Failed to delete category');
-      }
-    } catch (error) {
-      console.error('Error deleting category:', error);
-    }
-  };
-
-  const addItem = async (categoryName) => {
-    if (
-      newItemName.trim() !== '' &&
-      newItemImage.trim() !== '' &&
-      newItemPrice.trim() !== '' &&
-      newItemType.trim() !== '' &&
-      newItemDescription.trim() !== ''
-    ) {
-      try {
-        const response = await fetch('http://localhost:5000/addItem/addi', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            itemName: newItemName,
-            itemImage: newItemImage,
-            itemPrice: newItemPrice,
-            itemType: newItemType,
-            itemDescription: newItemDescription,
-            category_Name: categoryName, // Pass category name here
-          }),
-        });
-        if (response.ok) {
-          const newItemData = await response.json();
-          setFoodItem([...foodItem, newItemData]);
-          // Resetting the form inputs after adding the item
-          setNewItemName('');
-          setNewItemImage('');
-          setNewItemPrice('');
-          setNewItemType('');
-          setNewItemDescription('');
-        } else {
-          console.error('Failed to add item');
+      const response = await fetch(
+        `http://localhost:5000/deleteCategory/${categoryId}`,
+        {
+          method: 'DELETE',
         }
-      } catch (error) {
-        console.error('Error adding item:', error);
-      }
-    }
-  };
-  const delete_Category = async (categoryId) => {
-    try {
-      const response = await fetch(`http://localhost:5000/deleteCategory/${categoryId}`, {
-        method: 'DELETE',
-      });
+      );
       if (response.ok) {
-        setFoodCat(foodCat.filter(cat => cat._id !== categoryId));
+        setFoodCat(foodCat.filter((cat) => cat._id !== categoryId));
+        setFoodItem(
+          foodItem.filter((el) => {
+            return el.CategoryName != catName;
+          })
+        );
       } else {
         console.error('Failed to delete category');
       }
@@ -136,7 +82,7 @@ export default function Home() {
   );
   const handleDeleteItem = (itemId) => {
     // Filter out the deleted item from the foodItem state
-    const updatedItems = foodItem.filter(item => item._id !== itemId);
+    const updatedItems = foodItem.filter((item) => item._id !== itemId);
     setFoodItem(updatedItems); // Update the foodItem state
   };
 
@@ -230,98 +176,37 @@ export default function Home() {
       </div>
       <div className="container mt-4">
         {foodCat.map((cat) => (
-          <div key={cat._id}>
-          <div className="row mb-3">
-            <div className="d-flex align-items-center justify-content-between w-100">
-              <div className="fs-3 m-3">{cat.CategoryName}</div>
-              {role === 'Manager'&&<button
-                className="btn btn-sm btn-danger"
-                style={{ width: '10%' }}
-                onClick={() => delete_Category(cat._id)}
-              >
-                Delete category
-              </button>
-              }
-            </div>
-          </div>
-            <div className="row mb-3">
-              {filteredItems
-                .filter((item) => item.CategoryName === cat.CategoryName)
-                .map((item, idx) => (
-                  <div className="col-md-3 mb-3" key={idx}>
-                    <Card key={item._id} foodItem={item} onDelete={handleDeleteItem} />
-                  </div>
-                ))}
-              {role === 'Manager'&&
-              <div className="col-md-3 mb-3">
-                <div className="card">
-                  <div className="card-body">
-                    <h5 className="card-title">Add New Item</h5>
-                    <hr />
-                    <input
-                      className="form-control mb-3"
-                      type="text"
-                      placeholder="Name"
-                      value={newItemName}
-                      onChange={(e) => setNewItemName(e.target.value)}
-                    />
-                    <input
-                      className="form-control mb-3"
-                      type="text"
-                      placeholder="Image URL"
-                      value={newItemImage}
-                      onChange={(e) => setNewItemImage(e.target.value)}
-                    />
-                    <input
-                      className="form-control mb-3"
-                      type="number"
-                      placeholder="Price"
-                      value={newItemPrice}
-                      onChange={(e) => setNewItemPrice(e.target.value)}
-                    />
-                    <input
-                      className="form-control mb-3"
-                      type="text"
-                      placeholder="Type"
-                      value={newItemType}
-                      onChange={(e) => setNewItemType(e.target.value)}
-                    />
-                    <textarea
-                      className="form-control mb-3"
-                      placeholder="Description"
-                      value={newItemDescription}
-                      onChange={(e) => setNewItemDescription(e.target.value)}
-                    />
-                    <button
-                      className="btn btn-primary w-100"
-                      onClick={() => addItem(cat.CategoryName)}
-                    >
-                      Add Item
-                    </button>
-                  </div>
-                </div>
-              </div>}
-            </div>
-          </div>
+          <Categories
+            key={cat._id}
+            cat={cat}
+            delete_Category={delete_Category}
+            filteredItems={filteredItems}
+            role={role}
+            handleDeleteItem={handleDeleteItem}
+            setFoodItem={setFoodItem}
+            foodItem={foodItem}
+          ></Categories>
         ))}
-        {role === 'Manager'&&
-        <div className="row mt-4">
-          <div className="col-md-6">
-            <input
-              className="form-control"
-              type="text"
-              placeholder="New Category"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-            />
+
+        {role === 'Manager' && (
+          <div className="row mt-4">
+            <div className="col-md-6">
+              <input
+                className="form-control"
+                type="text"
+                placeholder="New Category"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+              />
+            </div>
+
+            <div className="col-md-6">
+              <button className="btn btn-primary w-100" onClick={addCategory}>
+                Add Category
+              </button>
+            </div>
           </div>
-          
-          <div className="col-md-6">
-            <button className="btn btn-primary w-100" onClick={addCategory}>
-              Add Category
-            </button>
-          </div>
-        </div>}
+        )}
       </div>
       <Footer />
     </>

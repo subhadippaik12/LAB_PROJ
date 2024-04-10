@@ -4,10 +4,24 @@ const { foodModel } = require('../models/Food.js');
 
 router.post('/addi', async (req, res) => {
   try {
-    const { itemName, itemImage, itemPrice, itemType, itemDescription, category_Name } = req.body;
-
+    const {
+      itemName,
+      itemImage,
+      itemPrice,
+      itemType,
+      itemDescription,
+      category_Name,
+    } = req.body;
+    console.log(req.body);
     // Check if all required fields are provided
-    if (!itemName || !itemImage || !itemPrice || !itemType || !itemDescription || !category_Name) {
+    if (
+      !itemName ||
+      !itemImage ||
+      !itemPrice ||
+      !itemType ||
+      !itemDescription ||
+      !category_Name
+    ) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
@@ -23,10 +37,10 @@ router.post('/addi', async (req, res) => {
       img: itemImage,
       price: itemPrice,
       type: itemType,
-      suprice:"0",
-      qty:"0",
+      suprice: '0',
+      qty: '0',
       description: itemDescription,
-      CategoryName: category_Name
+      CategoryName: category_Name,
     });
 
     // Save the new item to the database
