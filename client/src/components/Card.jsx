@@ -136,10 +136,10 @@ export default function Card(props) {
           {role !== 'Employee' && (
             <div className="h-100 fs-5">Sales price: Rs {qty * currPrice}</div>
           )}
-          {role !== 'Sales' && (
+          {(role === 'Manager' || role === 'Employee') && (
             <div className="h-100 fs-5">Supplier Price: Rs {qty * supp}</div>
           )}
-          {role !== 'Sales' && (
+          {(role === 'Manager' || role === 'Employee') && (
             <div className="input-group mt-3">
               <input
                 id="newprice"
@@ -161,7 +161,7 @@ export default function Card(props) {
               </button>
             </div>
           )}
-          {role !== 'Manager' && (
+          {(role === 'Employee' || role === 'Sales') && (
             <div className="mt-3">
               <button className="btn btn-success" onClick={handleAddToCart}>
                 Add to Cart
