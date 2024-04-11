@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Card from '../components/Card';
-
+import Path from '../Path';
 export default function Categories(props) {
   const {
     cat,
@@ -26,7 +26,7 @@ export default function Categories(props) {
       newItemDescription.trim() !== ''
     ) {
       try {
-        const response = await fetch('http://localhost:5000/addItem/addi', {
+        const response = await fetch(Path.api_path+'/addItem/addi', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

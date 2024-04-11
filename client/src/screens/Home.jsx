@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Categories from '../components/Categories';
-
+import Path from '../Path';
 export default function Home() {
   const role = localStorage.getItem('role');
   const [newCategory, setNewCategory] = useState('');
@@ -12,7 +12,7 @@ export default function Home() {
 
   const loadData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/foodData', {
+      const response = await fetch(Path.api_path+'/api/foodData', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export default function Home() {
   const addCategory = async () => {
     if (newCategory.trim() !== '') {
       try {
-        const response = await fetch('http://localhost:5000/addCategory/add', {
+        const response = await fetch(Path.api_path+'/addCategory/add', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -52,8 +52,8 @@ export default function Home() {
 
   const delete_Category = async (categoryId, catName) => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/deleteCategory/${categoryId}`,
+      const response = await fetch(Path.api_path+
+        `/deleteCategory/${categoryId}`,
         {
           method: 'DELETE',
         }

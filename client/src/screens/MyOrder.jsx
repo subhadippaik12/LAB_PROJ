@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
+import Path from '../Path';
 export default function MyOrder() {
   const [orderData, setOrderData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const fetchMyOrder = async () => {
     //console.log(userEmail);
-    const response = await fetch('http://localhost:5000/order/myOrderData', {
+    const response = await fetch(Path.api_path+'/order/myOrderData', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

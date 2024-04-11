@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import trash from '../trash.svg';
+
 import { useCart, useDispatchCart } from '../components/ContextReducer';
 import { useNavigate } from 'react-router-dom';
-
+import Path from '../Path';
 export default function Cart() {
   const role = localStorage.getItem('role');
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function Cart() {
     }
     const userEmail = localStorage.getItem('userEmail');
     const url =
-      'http://localhost:5000/' +
+    Path.api_path+'/' +
       (role === 'Sales' ? 'order' : 'supply') +
       '/orderData';
     const res = await fetch(url, {
@@ -70,8 +70,11 @@ export default function Cart() {
         </tr>
       </thead>
       <tbody>
+        
         {data.map((food, index) => (
+          
           <tr key={index} className="text-white">
+           
             <th scope="row" className="text-white">
               {index + 1}
             </th>

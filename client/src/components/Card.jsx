@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatchCart, useCart } from './ContextReducer';
-
+import Path from '../Path';
 export default function Card(props) {
   const role = localStorage.getItem('role');
   const priceRef = useRef();
   const dispatch = useDispatchCart();
   const data = useCart();
-  const [qty, setQty] = useState(1);
+  const [qty, setQty] = useState(0);
   const [price, setPrice] = useState(0);
   const [supp, setSupp] = useState(parseInt(props.foodItem.suprice));
   const [currPrice, setCurrPrice] = useState(parseInt(props.foodItem.price));
@@ -20,14 +20,22 @@ export default function Card(props) {
         break;
       }
     }
+    let pr;
+     if (role !== 'Employee') {
+     pr = (qty * currPrice).toString();
+    } else {
+     pr= (qty * supp).toString();;
+    }
     if (food.id) {
+      
       await dispatch({
         type: 'UPDATE',
         id: props.foodItem._id,
-        price: (qty * currPrice).toString(),
+        price: pr,
         qty: qty.toString(),
         unit: props.foodItem.type,
       });
+      setQty(0);
       return;
     }
 
@@ -35,10 +43,12 @@ export default function Card(props) {
       type: 'ADD',
       id: props.foodItem._id,
       name: props.foodItem.name,
-      price: (qty * currPrice).toString(),
+      price: pr,
       qty: qty.toString(),
       unit: props.foodItem.type,
     });
+    setQty(0);
+    
   };
 
   const setNewPrice = async (e) => {
@@ -48,7 +58,7 @@ export default function Card(props) {
       item: props.foodItem.name,
       newprice: price.toString(),
     };
-    const response = await fetch('http://localhost:5000/price/change', {
+    const response = await fetch(Path.api_path+'/price/change', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -67,15 +77,15 @@ export default function Card(props) {
       } else {
         setSupp(price);
       }
-      setPrice(0);
+      
     }
   };
 
   const deleteItem = async () => {
     // Implement delete item logic here
     try {
-      const response = await fetch(
-        `http://localhost:5000/deleteItem/${props.foodItem._id}`,
+      const response = await fetch(Path.api_path+
+        `/deleteItem/${props.foodItem._id}`,
         {
           method: 'DELETE',
         }
@@ -115,7 +125,7 @@ export default function Card(props) {
         <div>
           <label htmlFor="amt">Qty Req :</label>
           <input
-            defaultValue="1"
+            value={qty}
             id="amt"
             min="0"
             max={available}
@@ -129,7 +139,7 @@ export default function Card(props) {
         <div>
           <label htmlFor="amt">Qty Req :</label>
           <input
-            defaultValue="1"
+            value={qty}
             id="amt"
             min="0"
             type="number"
@@ -139,11 +149,19 @@ export default function Card(props) {
         </div>
       )}
       <div className="h-100 fs-6">Available: {available}</div>
-      {role !== 'Employee' && (
-        <div className="h-100 fs-6">Sales price: Rs {qty * currPrice}</div>
+      {role !== 'Employee' && (<>
+        <div className="h-100 fs-6">Sales unit price: Rs {currPrice}</div>
+        </>
+      )}
+      {role !== 'Employee' && role !== 'Manager' &&(<>
+        <div className="h-100 fs-6">Total  price: Rs {qty * currPrice}</div>
+        </>
       )}
       {(role === 'Manager' || role === 'Employee') && (
-        <div className="h-100 fs-6">Supplier Price: Rs {qty * supp}</div>
+        <div className="h-100 fs-6">Supplier unit Price: Rs {supp}</div>
+      )}
+      {( role === 'Employee') && (
+        <div className="h-100 fs-6">Total Price: Rs {qty * supp}</div>
       )}
       {(role === 'Manager' || role === 'Employee') && (
         <div className="input-group mt-3">
@@ -170,7 +188,7 @@ export default function Card(props) {
       )}
       {(role === 'Employee' || role === 'Sales') && (
         <div className="mt-3">
-          <button className="btn btn-success" onClick={handleAddToCart}>
+          <button className="btn btn-success" onClick={handleAddToCart}  disabled={qty <= 0}>
             Add to Cart
           </button>
         </div>

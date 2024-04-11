@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
-
+import Path from '../Path';
 export default function MySupply() {
   const [orderData, setOrderData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   const fetchMyOrder = async () => {
-    const response = await fetch('http://localhost:5000/supply/myOrderData', {
+    const response = await fetch(Path.api_path+'/supply/myOrderData', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

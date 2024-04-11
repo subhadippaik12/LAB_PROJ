@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import Footer from '../components/Footer';
-
+import Path from '../Path';
 function OrderReport() {
   const [orders, setOrders] = useState([]);
   const [supplies, setSupplies] = useState([]);
@@ -15,7 +15,7 @@ function OrderReport() {
   const [type, setType] = useState('total');
 
   const fetchMyOrder = async () => {
-    const response = await fetch('http://localhost:5000/order/myOrderData', {
+    const response = await fetch(Path.api_path+'/order/myOrderData', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ function OrderReport() {
     setCurrOrders(curr);
   };
   const fetchMySupply = async () => {
-    const response = await fetch('http://localhost:5000/supply/myOrderData', {
+    const response = await fetch(Path.api_path+'/supply/myOrderData', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
