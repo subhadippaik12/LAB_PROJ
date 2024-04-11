@@ -1,6 +1,6 @@
 # ABCD Supermarket
 
-This is a basic website for ordering food by customers. Customers and choose their food items and order it after adding it to their cart.
+This is a basic website for supermarket maintainence. It includes features for sales clerk, manager and supplies. At the end it also generates the report showing the total profit or loss with filters.
 
 To run:
 
@@ -9,6 +9,16 @@ To run:
 3. npm i
 4. npm run dev
 
-Login/Register and order your favourite food :)
+Sales Clerk credentials:
+sales@gmail.com
+sales123
+
+Manager credentials:
+manager@gmail.com
+manager123
+
+Employee credentials:
+employee@gmail.com
+employee123
 
 # LAB_PROJ
