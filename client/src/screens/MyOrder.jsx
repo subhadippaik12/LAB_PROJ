@@ -42,7 +42,7 @@ export default function MyOrder() {
             />
           </div>
           {filteredOrderData.length > 0 ? (
-            filteredOrderData.map((data, k) => (
+            filteredOrderData.reverse().map((data, k) => (
               <div
                 key={k}
                 className="col-md-6 my-2"
