@@ -94,89 +94,90 @@ export default function Card(props) {
   };
 
   return (
-    <div className="card mt-3 bg-dark text-white" style={{ width: '100%' }}>
-      <img
-        className="card-img-top"
-        src={props.foodItem.img}
-        alt="Card image cap"
-        style={{ maxHeight: '200px', width: '100%', objectFit: 'cover' }}
-      />
-      <div className="card-body">
-        <h5 className="text-center card-title fw-bold">
-          {props.foodItem.name}
-        </h5>
-        <div className="container w-100">
-          <div className="h-100 fs-5">Unit: {props.foodItem.type}</div>
-          {role === 'Sales' && (
-            <div>
-              <label htmlFor="amt">Qty Req :</label>
-              <input
-                defaultValue="1"
-                id="amt"
-                min="0"
-                max={available}
-                type="number"
-                onChange={(e) => setQty(e.target.value)}
-              ></input>
-            </div>
-          )}
-          {role === 'Employee' && (
-            <div>
-              <label htmlFor="amt">Qty Req :</label>
-              <input
-                defaultValue="1"
-                id="amt"
-                min="0"
-                type="number"
-                onChange={(e) => setQty(e.target.value)}
-              ></input>
-            </div>
-          )}
-          <div className="h-100 fs-5">Available: {available}</div>
-          {role !== 'Employee' && (
-            <div className="h-100 fs-5">Sales price: Rs {qty * currPrice}</div>
-          )}
-          {(role === 'Manager' || role === 'Employee') && (
-            <div className="h-100 fs-5">Supplier Price: Rs {qty * supp}</div>
-          )}
-          {(role === 'Manager' || role === 'Employee') && (
-            <div className="input-group mt-3">
-              <input
-                id="newprice"
-                type="number"
-                min="0"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                className="form-control"
-                placeholder="Price"
-              />
-              <button
-                className="btn btn-outline-success"
-                type="button"
-                onClick={setNewPrice}
-              >
-                {role === 'Manager'
-                  ? 'Change Per Unit Sales Price'
-                  : 'Change Per Unit Supplier Price'}
-              </button>
-            </div>
-          )}
-          {(role === 'Employee' || role === 'Sales') && (
-            <div className="mt-3">
-              <button className="btn btn-success" onClick={handleAddToCart}>
-                Add to Cart
-              </button>
-            </div>
-          )}
-          {role === 'Manager' && (
-            <div className="mt-3">
-              <button className="btn btn-danger" onClick={deleteItem}>
-                Delete
-              </button>
-            </div>
-          )}
+    <div className="card mt-3 bg-dark text-white" style={{ width: '100%', height: '100%', padding: '20px', borderRadius: '10px', position: 'relative' }}>
+  {role === 'Manager'&&
+  <button className="btn btn-danger btn-sm p-1" style={{ position: 'absolute', top: '10px', right: '10px' }} onClick={deleteItem}>
+    Delete
+  </button>}
+  <img
+    className="card-img-top"
+    src={props.foodItem.img}
+    alt="Card image cap"
+    style={{ maxHeight: '200px', width: '100%', objectFit: 'cover', borderRadius: '10px' }}
+  />
+  <div className="card-body">
+    <h5 className="text-center card-title fw-bold">
+      {props.foodItem.name}
+    </h5>
+    <div className="container w-100">
+      <div className="h-100 fs-6">Unit: {props.foodItem.type}</div>
+      {role === 'Sales' && (
+        <div>
+          <label htmlFor="amt">Qty Req :</label>
+          <input
+            defaultValue="1"
+            id="amt"
+            min="0"
+            max={available}
+            type="number"
+            onChange={(e) => setQty(e.target.value)}
+            style={{ width: '50px', marginLeft: '10px' }}
+          />
         </div>
-      </div>
+      )}
+      {role === 'Employee' && (
+        <div>
+          <label htmlFor="amt">Qty Req :</label>
+          <input
+            defaultValue="1"
+            id="amt"
+            min="0"
+            type="number"
+            onChange={(e) => setQty(e.target.value)}
+            style={{ width: '50px', marginLeft: '10px' }}
+          />
+        </div>
+      )}
+      <div className="h-100 fs-6">Available: {available}</div>
+      {role !== 'Employee' && (
+        <div className="h-100 fs-6">Sales price: Rs {qty * currPrice}</div>
+      )}
+      {(role === 'Manager' || role === 'Employee') && (
+        <div className="h-100 fs-6">Supplier Price: Rs {qty * supp}</div>
+      )}
+      {(role === 'Manager' || role === 'Employee') && (
+        <div className="input-group mt-3">
+          <input
+            id="newprice"
+            type="number"
+            min="0"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="form-control"
+            placeholder="Price"
+            style={{ width: '150px' }}
+          />
+          <button
+            className="btn btn-outline-success"
+            type="button"
+            onClick={setNewPrice}
+          >
+            {role === 'Manager'
+              ? 'Change Per Unit Sales Price'
+              : 'Change Per Unit Supplier Price'}
+          </button>
+        </div>
+      )}
+      {(role === 'Employee' || role === 'Sales') && (
+        <div className="mt-3">
+          <button className="btn btn-success" onClick={handleAddToCart}>
+            Add to Cart
+          </button>
+        </div>
+      )}
     </div>
+  </div>
+</div>
+
   );
 }

@@ -175,7 +175,9 @@ function OrderReport() {
     doc.setFontSize(20);
     let i=20;
     headers.forEach((item, ind)=>{
-      doc.text(item, 10, i); 
+      const textWidth = doc.getStringUnitWidth(item) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+      const xOffset = (doc.internal.pageSize.getWidth() - textWidth) / 2;
+      doc.text(item, xOffset, i); 
       i= i+10;
       if(ind==0){
         doc.setFontSize(15);
@@ -206,6 +208,11 @@ function OrderReport() {
         startY: i+30, // Start table from Y position 140 (below the headers and filters)
         head: [columns],
         body: rows,
+        theme: 'grid',
+        styles: {
+          valign: 'middle',
+          halign: 'center',
+        }
       });
     } 
     
@@ -225,142 +232,150 @@ function OrderReport() {
         startY: i+30, // Start table from Y position 140 (below the headers and filters)
         head: [columns],
         body: rows,
+        theme: 'grid',
+        styles: {
+          valign: 'middle',
+          halign: 'center',
+        }
       });
     }
 
     // Save the PDF
     doc.save('order_report.pdf');
-  };
+};
+
   //console.log(currOrders);
   return (
     <div>
       <div>
         <Navbar></Navbar>
       </div>
-      {type==='total' && (
-        <div className="text-center display-6 my-3">Total Report</div>
-      )}
-      {type !== 'supplies' && (
-        <div className="text-center display-6">
-          <div className="text-center my-3">Order Reports</div>
-          <div>Total Income: {orderCost}</div>
-          <div>Total quantities sold: {orderqty}</div>
-        </div>
-      )}
-      {type !== 'orders' && (
-        <div className="text-center display-6">
-          <div className="text-center my-3">Supplies Reports</div>
-          <div>Total Expenditure: {supplyCost}</div>
-          <div>Total quantities bought: {supplyqty}</div>
-        </div>
-      )}
       {type === 'total' && (
-        <div className="text-center display-6">
-          {orderCost-supplyCost>=0 ? `Profit: ${orderCost-supplyCost}`: `Loss: ${supplyCost-orderCost}`}
-        </div>
-      )}
-      <button className="" onClick={handleDownload}>
-        Download Report
-      </button>
-      <div className="mb-3 display-6">Filters: </div>
-      <div className="d-flex justify-content-around">
-        <label htmlFor="start">Enter Start Date: </label>
-        <label htmlFor="end">Enter End Date: </label>
-        <label htmlFor="item">Enter Item: </label>
-        <label htmlFor="type">Enter Type: </label>
-      </div>
-      <div className="d-flex justify-content-around">
-        <input
-          id="start"
-          type="date"
-          className="w-25"
-          onChange={(e) => setStart(e.target.value)}
-        ></input>
-        <input
-          id="end"
-          type="date"
-          className="w-25"
-          onChange={(e) => setEnd(e.target.value)}
-        ></input>
-        <input
-          id="item"
-          type="text"
-          className="w-25"
-          onChange={(e) => setItem(e.target.value)}
-        ></input>
-        <select
-          id="type"
-          className="w-25"
-          onChange={(e) => setType(e.target.value)}
-        >
-          <option value="total">total</option>
-          <option value="orders">orders</option>
-          <option value="supplies">supplies</option>
-        </select>
-      </div>
+  <div style={{ textAlign: 'center', fontSize: '1.5rem', marginTop: '1.5rem' }}>Total Report</div>
+)}
+{type !== 'supplies' && (
+  <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>
+    <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>Order Reports</div>
+    <div>Total Income: {orderCost}</div>
+    <div>Total quantities sold: {orderqty}</div>
+  </div>
+)}
+{type !== 'orders' && (
+  <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>
+    <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>Supplies Reports</div>
+    <div>Total Expenditure: {supplyCost}</div>
+    <div>Total quantities bought: {supplyqty}</div>
+  </div>
+)}
+{type === 'total' && (
+  <div style={{ textAlign: 'center', fontSize: '1.5rem' }}>
+    {orderCost - supplyCost >= 0 ? `Profit: ${orderCost - supplyCost}` : `Loss: ${supplyCost - orderCost}`}
+  </div>
+)}
 
-      {type !== 'supplies' && (
-        <div className="my-2 bg-light text-dark">
-          <table className="table table-hover ">
-            <thead className=" fs-4">
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Date</th>
-                <th scope="col">Name</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Unit</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currOrders.map((el, index) => (
-                <tr key={index}>
-                  <th scope="row">{index + 1}</th>
-                  <td>{el.date}</td>
-                  <td>{el.name}</td>
-                  <td>{el.qty}</td>
-                  <td>{el.item_unit}</td>
-                  <td>{el.tot_item_cost}</td>
-                  <td>Ordered</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+<div style={{ display: 'flex', justifyContent: 'space-around', width:'100%'}}>
+  <label htmlFor="start">Enter Start Date: </label>
+  <label htmlFor="end">Enter End Date: </label>
+  <label htmlFor="item">Enter Item: </label>
+  <label htmlFor="type">Enter Type: </label>
+</div>
+<div style={{ display: 'flex', justifyContent: 'space-around',width:'100%' }}>
+  <input
+    id="start"
+    type="date"
+    style={{ width: '17%', padding: '0.5rem' }}
+    onChange={(e) => setStart(e.target.value)}
+  />
+  <input
+    id="end"
+    type="date"
+    style={{ width: '17%', padding: '0.5rem' }}
+    onChange={(e) => setEnd(e.target.value)}
+  />
+  <input
+    id="item"
+    type="text"
+    style={{ width: '17%', padding: '0.5rem' }}
+    onChange={(e) => setItem(e.target.value)}
+  />
+  <select
+    id="type"
+    style={{ width: '17%', padding: '0.5rem' }}
+    onChange={(e) => setType(e.target.value)}
+  >
+    <option value="total">total</option>
+    <option value="orders">orders</option>
+    <option value="supplies">supplies</option>
+  </select>
+</div>
 
-      {type !== 'orders' && (
-        <div className="my-2 bg-light text-dark">
-          <table className="table table-hover ">
-            <thead className=" fs-4">
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Date</th>
-                <th scope="col">Name</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Unit</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currSupplies.map((el, index) => (
-                <tr key={index}>
-                  <th scope="row">{index + 1}</th>
-                  <td>{el.date}</td>
-                  <td>{el.name}</td>
-                  <td>{el.qty}</td>
-                  <td>{el.item_unit}</td>
-                  <td>{el.tot_item_cost}</td>
-                  <td>Supplied</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+{type !== 'supplies' && (
+  <div style={{ marginBottom: '1.5rem', backgroundColor: '#343a40', color: '#fff', padding: '0.5rem', width: '90%', margin: '0 auto' }}>
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <thead style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+        <tr>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">#</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Date</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Name</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Quantity</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Unit</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Amount</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        {currOrders.map((el, index) => (
+          <tr key={index}>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{index + 1}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.date}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.name}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.qty}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.item_unit}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.tot_item_cost}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>Ordered</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
 
+{type !== 'orders' && (
+  <div style={{ marginBottom: '1.5rem', backgroundColor: '#343a40', color: '#fff', padding: '0.5rem', width: '90%', margin: '0 auto' }}>
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <thead style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+        <tr>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">#</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Date</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Name</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Quantity</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Unit</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Amount</th>
+          <th style={{ border: '1px solid #dee2e6', padding: '0.5rem', backgroundColor: '#212529' }} scope="col">Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        {currSupplies.map((el, index) => (
+          <tr key={index}>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{index + 1}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.date}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.name}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.qty}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.item_unit}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>{el.tot_item_cost}</td>
+            <td style={{ border: '1px solid #dee2e6', padding: '0.5rem' }}>Supplied</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
+<div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
+  <button style={{ padding: '0.5rem 1rem', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '0.25rem', cursor: 'pointer' }} onClick={handleDownload}>
+    Download Report
+  </button>
+</div>
       <div>
         <Footer></Footer>
       </div>

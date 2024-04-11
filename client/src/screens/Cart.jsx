@@ -56,75 +56,79 @@ export default function Cart() {
   };
   return (
     <div>
-      <div className="container bg-secondary m-auto mt-5 table-responsive table-responsive-sm table-responsive-md">
-        <table className="table table-hover ">
-          <thead className=" fs-4">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Name</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Unit</th>
-              <th scope="col">Amount</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((food, index) => (
-              <tr key={index} className="text-white">
-                <th scope="row" className="text-white">
-                  {index + 1}
-                </th>
-                <td>{food.name}</td>
-                <td>{food.qty}</td>
-                <td>{food.type}</td>
-                <td>{food.price}</td>
-                <td>
-                  <button type="button" className="btn p-0">
-                    <img
-                      src={trash}
-                      alt="delete"
-                      width="20em"
-                      height="20em"
-                      onClick={() => {
-                        dispatch({ type: 'REMOVE', index: index });
-                      }}
-                    />
-                  </button>{' '}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div>
-          <h1 className="fs-2">Total Price: {totalPrice}/-</h1>
-        </div>
-        {role === 'Sales' && (
+      <div className="container bg-dark m-auto mt-5 table-responsive table-responsive-sm table-responsive-md">
+  <div className="d-flex flex-column justify-content-center align-items-center"> {/* Centering container */}
+    <table className="table table-hover ">
+      <thead className=" fs-4">
+        <tr>
+          <th style={{ color: 'white' }}scope="col">#</th>
+          <th style={{ color: 'white' }}scope="col">Name</th>
+          <th style={{ color: 'white' }}scope="col">Quantity</th>
+          <th style={{ color: 'white' }}scope="col">Unit</th>
+          <th style={{ color: 'white' }}scope="col">Amount</th>
+          <th style={{ color: 'white' }}scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((food, index) => (
+          <tr key={index} className="text-white">
+            <th scope="row" className="text-white">
+              {index + 1}
+            </th>
+            <td style={{ color: 'white' }}>{food.name}</td>
+            <td style={{ color: 'white' }}>{food.qty}</td>
+            <td style={{ color: 'white' }}>{food.type}</td>
+            <td style={{ color: 'white' }}>{food.price}</td>
+            <td>
+            <button
+  type="button"
+  className="btn btn-danger btn-sm p-1"
+  onClick={() => {
+    dispatch({ type: 'REMOVE', index: index });
+  }}
+>
+  Delete
+</button>{' '}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <div>
+      <h1 className="fs-2">Total Price: {totalPrice}/-</h1>
+    </div>
+    {role === 'Sales' && (
+      <div>
+        <div className="d-flex flex-column align-items-center"> {/* Centering form elements */}
           <div>
-            <div>
-              <label htmlFor="name">Enter name: </label>
-              <input
-                id="name"
-                type="text"
-                onChange={(e) => setUsername(e.target.value)}
-              ></input>
-            </div>
-            <div>
-              <label htmlFor="mobile">Enter phno: </label>
-              <input
-                id="mobile"
-                type="text"
-                onChange={(e) => setMobileNo(e.target.value)}
-              ></input>
-            </div>
+            <label htmlFor="name">Enter name: </label>
+            <input
+              id="name"
+              type="text"
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </div>
-        )}
-        <div>
-          <button className="btn bg-success mt-5 " onClick={handleCheckOut}>
-            {' '}
-            {role === 'Sales' ? 'Check out' : 'Get supplies'}
-          </button>
+          <div>
+            <label htmlFor="mobile">Enter PH No: </label>
+            <input
+              id="mobile"
+              type="text"
+              onChange={(e) => setMobileNo(e.target.value)}
+            />
+          </div>
         </div>
       </div>
+    )}
+    <div>
+      <button className="btn bg-success mt-5 " onClick={handleCheckOut}>
+        {' '}
+        {role === 'Sales' ? 'Check out' : 'Get supplies'}
+      </button>
+    </div>
+  </div>
+</div>
+
+
     </div>
   );
 }
