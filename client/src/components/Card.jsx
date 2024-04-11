@@ -153,7 +153,7 @@ export default function Card(props) {
         <div className="h-100 fs-6">Sales unit price: Rs {currPrice}</div>
         </>
       )}
-      {role !== 'Employee' && role !== 'Manager' &&(<>
+      {role === 'Sales' &&(<>
         <div className="h-100 fs-6">Total  price: Rs {qty * currPrice}</div>
         </>
       )}

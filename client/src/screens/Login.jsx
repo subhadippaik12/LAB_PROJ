@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Path from '../Path';
+import Navbar from '../components/Navbar';
 export default function Login() {
   const [credentials, setCredentials] = useState({
     email: '',
@@ -39,29 +40,31 @@ export default function Login() {
 
   return (
     <>
-      <div className="container">
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="exampleInputEmail1" className="form-label">
-              Email address
-            </label>
-            <input
-              type="email"
-              className="form-control"
-              name="email"
-              value={credentials.email}
-              id="exampleInputEmail1"
-              aria-describedby="emailHelp"
-              onChange={onChange}
-            />
-            <div id="emailHelp" className="form-text">
-              We'll never share your email with anyone else.
-            </div>
+    <Navbar />
+    <div className="container">
+      <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto', marginTop: '50px' }}>
+        <div className="mb-3">
+          <label htmlFor="exampleInputEmail1" className="form-label">
+            Email address
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            name="email"
+            value={credentials.email}
+            id="exampleInputEmail1"
+            aria-describedby="emailHelp"
+            onChange={onChange}
+          />
+          <div id="emailHelp" className="form-text">
+            We'll never share your email with anyone else.
           </div>
-          <div className="mb-3">
-            <label htmlFor="exampleInputPassword1" className="form-label">
-              Password
-            </label>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="exampleInputPassword1" className="form-label">
+            Password
+          </label>
+          <div className="input-group">
             <input
               type={passwordType ? 'password' : 'text'}
               className="form-control"
@@ -70,19 +73,22 @@ export default function Login() {
               id="exampleInputPassword1"
               onChange={onChange}
             />
-            <input
+            <button
+              className="btn btn-outline-secondary"
               type="button"
-              value={passwordType ? 'Show password' : 'Hide password'}
-              className="m-3 btn btn-info"
               onClick={() => setpasswordType(!passwordType)}
-            ></input>
+            >
+              {passwordType ? 'Show' : 'Hide'}
+            </button>
           </div>
-
-          <button type="submit" className="m-3 btn btn-primary">
-            Submit
-          </button>
-        </form>
-      </div>
-    </>
+        </div>
+  
+        <button type="submit" className="btn btn-primary">
+          Submit
+        </button>
+      </form>
+    </div>
+  </>
+  
   );
 }
