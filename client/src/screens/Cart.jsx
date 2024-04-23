@@ -28,7 +28,7 @@ export default function Cart() {
       alert('Please enter a valid mobile number.');
       return;
     }
-    if(username.trim() !== ''){
+    if(role === 'Sales' &&username.trim() === ''){
       alert('Enter valid name');
       return;
     }
