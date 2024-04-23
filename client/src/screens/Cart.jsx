@@ -28,6 +28,10 @@ export default function Cart() {
       alert('Please enter a valid mobile number.');
       return;
     }
+    if(username.trim() !== ''){
+      alert('Enter valid name');
+      return;
+    }
     
 
     const userEmail = localStorage.getItem('userEmail');

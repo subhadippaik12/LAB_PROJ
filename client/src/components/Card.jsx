@@ -13,6 +13,11 @@ export default function Card(props) {
   const [available, setAvailable] = useState(parseInt(props.foodItem.qty));
 
   const handleAddToCart = async () => {
+    if (role !== 'Employee'&&qty > available) {
+      alert('Requested quantity exceeds available quantity. Item is not available.');
+      return; // Exit function
+    }
+
     let food = {};
     for (const item of data) {
       if (item.id === props.foodItem._id) {
@@ -52,6 +57,11 @@ export default function Card(props) {
   };
 
   const setNewPrice = async (e) => {
+    if (price <= 0||price>100000000) {
+      alert('enter valid price');
+      return; // Exit function
+    }
+  
     e.preventDefault();
     const data = {
       role,
